@@ -1,0 +1,11 @@
+# 🗂️ Ignorar dependencias de Node.js
+node_modules/
+
+# 🐞 Archivos de log
+npm-debug.log*
+
+# 🔐 Variables de entorno
+.env
+
+# 📦 Archivos generados por Prisma
+.prisma/
