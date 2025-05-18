@@ -109,24 +109,36 @@ Cada uno debe tener su propio package.json y ejecutarse individualmente dentro d
 📝 Evolución del Proyecto
 
 Versión 1
-- Creación de 5 microservicios independientes.
-- Instalación de dependencias iniciales y configuración básica.
+  Creación de 5 microservicios independientes.
+  Instalación de dependencias iniciales y configuración básica.
 
 Versión 2
-- Reducción a 3 microservicios para mejorar organización y mantenimiento.
-- Instalación de nuevas dependencias necesarias.
-- Creación de endpoints básicos de tipo GET y POST para cada microservicio.
+  Reducción a 3 microservicios para mejorar organización y mantenimiento.
+  Instalación de nuevas dependencias necesarias.
+  Creación de endpoints básicos de tipo GET y POST para cada microservicio.
 
 Versión 3
-- Pruebas funcionales con Postman para verificar endpoints.
-- Modificaciones y correcciones en archivos fuente para mejorar el funcionamiento.
+  Pruebas funcionales con Postman para verificar endpoints.
+  Modificaciones y correcciones en archivos fuente para mejorar el funcionamiento.
 
 Versión 4
-- Implementación de nuevos endpoints PUT (actualizar) y DELETE (eliminar).
-- Verificación y validación exhaustiva mediante Postman.
-- Implementación de lógica para actualización y anulación de ventas sin eliminación física.
+  Implementación de nuevos endpoints PUT (actualizar) y DELETE (eliminar).
+  Verificación y validación exhaustiva mediante Postman.
+  Implementación de lógica para actualización y anulación de ventas sin eliminación física.
 
-Versión 5 (Próxima etapa)
-- Conexión entre microservicios mediante llamadas HTTP para sincronización de datos.
-- Ejemplo: microservicio de ventas consultará catálogo para validar productos y actualizar stock.
-- Planificación para integración más robusta y escalable.
+Versión 5
+  Integración completa entre microservicio de ventas y catálogo mediante llamadas HTTP.
+  Validación y obtención dinámica de datos de producto (precio, stock) desde catalogo-service antes de registrar la venta.
+  Ajuste del tipo de dato clienteId para que coincida con el formato RUT (String) usado en cliente-service, evitando errores de Prisma.
+  Cálculo correcto de subtotales y monto final con descuento aplicado en el microservicio de ventas.
+  Manejo de errores robusto para evitar creación de ventas inconsistentes (stock insuficiente, producto no encontrado).
+  Confirmación del correcto funcionamiento y respuesta JSON completa con detalles de la venta y sus productos asociados.
+
+Versión 6(Planificación)
+  Implementar la lógica para descontar el stock de productos en catálogo-service cuando se registre una venta en ventas-service.
+  Sincronización entre servicios para mantener consistencia del stock en tiempo real.
+  Evaluar e implementar control de concurrencia para evitar sobreventa de productos.
+  Añadir endpoint para consultar stock actualizado en catálogo-service.
+  Mejorar manejo de errores y reintentos en caso de fallo en la comunicación entre microservicios.
+  Añadir logs detallados y monitoreo para detectar y prevenir inconsistencias de stock.
+

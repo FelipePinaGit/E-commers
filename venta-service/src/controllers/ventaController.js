@@ -1,4 +1,6 @@
 import prisma from "../prisma/client.js";
+import { obtenerProducto } from "../services/catalogoService.js";
+
 
 // Obtener todas las ventas
 export const getVentas = async (req, res) => {
@@ -12,19 +14,43 @@ export const getVentas = async (req, res) => {
   }
 };
 
-// Crear una nueva venta con detalles
+// Crear una nueva venta con validación de catálogo
 export const createVenta = async (req, res) => {
-  console.log("Body recibido en venta:", req.body); // 🔍 Ver qué estás enviando
+  console.log("Body recibido en venta:", req.body);
   const { fecha, clienteId, descuento, detalles } = req.body;
-  
+
   if (!Array.isArray(detalles)) {
     return res.status(400).json({ error: "El campo 'detalles' debe ser un array" });
   }
 
-
   try {
-    // Calcular monto final sumando subtotales y aplicando descuento
-    const subtotalTotal = detalles.reduce((acc, item) => acc + item.subtotal, 0);
+    let subtotalTotal = 0;
+    const detallesValidados = [];
+
+    for (const item of detalles) {
+      const producto = await obtenerProducto(item.productoId);
+
+      if (!producto) {
+        return res.status(400).json({ error: `Producto con ID ${item.productoId} no encontrado` });
+      }
+
+      if (producto.stock < item.cantidad) {
+        return res.status(400).json({
+          error: `Stock insuficiente para el producto ${producto.nombre} (disponible: ${producto.stock})`
+        });
+      }
+
+      const subtotal = producto.precioActual * item.cantidad;
+      subtotalTotal += subtotal;
+
+      detallesValidados.push({
+        productoId: item.productoId,
+        precio: producto.precioActual,
+        cantidad: item.cantidad,
+        subtotal
+      });
+    }
+
     const montoFinal = subtotalTotal - (subtotalTotal * (descuento / 100));
 
     const nuevaVenta = await prisma.venta.create({
@@ -34,28 +60,29 @@ export const createVenta = async (req, res) => {
         descuento,
         montoFinal,
         detalles: {
-          create: detalles.map(item => ({
-            productoId: item.productoId,
-            precio: item.precio,
-            cantidad: item.cantidad,
-            subtotal: item.subtotal
-          }))
+          create: detallesValidados
         }
       },
       include: { detalles: true }
     });
 
+    // TODO: llamar a servicio catálogo para descontar stock aquí
+
     res.status(201).json(nuevaVenta);
   } catch (error) {
-    console.error(error);
+    console.error("Error al crear la venta:", error.message);
     res.status(500).json({ error: "Error al crear la venta" });
   }
 };
 
-// Editar una venta existente
+// Editar una venta existente con validación y recálculo
 export const updateVenta = async (req, res) => {
   const { id } = req.params;
   const { detalles, descuento } = req.body;
+
+  if (!Array.isArray(detalles)) {
+    return res.status(400).json({ error: "El campo 'detalles' debe ser un array" });
+  }
 
   try {
     const ventaExistente = await prisma.venta.findUnique({
@@ -67,12 +94,38 @@ export const updateVenta = async (req, res) => {
       return res.status(404).json({ error: "Venta no encontrada" });
     }
 
+    // Validar detalles y recalcular precios/subtotales
+    let subtotalTotal = 0;
+    const detallesValidados = [];
+
+    for (const item of detalles) {
+      const producto = await obtenerProducto(item.productoId);
+
+      if (!producto) {
+        return res.status(400).json({ error: `Producto con ID ${item.productoId} no encontrado` });
+      }
+
+      if (producto.stock < item.cantidad) {
+        return res.status(400).json({
+          error: `Stock insuficiente para el producto ${producto.nombre} (disponible: ${producto.stock})`
+        });
+      }
+
+      const subtotal = producto.precioActual * item.cantidad;
+      subtotalTotal += subtotal;
+
+      detallesValidados.push({
+        productoId: item.productoId,
+        precio: producto.precioActual,
+        cantidad: item.cantidad,
+        subtotal
+      });
+    }
+
+    const montoFinal = subtotalTotal - (subtotalTotal * (descuento / 100));
+
     // Borrar detalles anteriores
     await prisma.detalleVenta.deleteMany({ where: { ventaId: ventaExistente.id } });
-
-    // Calcular nuevo monto final
-    const subtotalTotal = detalles.reduce((acc, item) => acc + item.subtotal, 0);
-    const montoFinal = subtotalTotal - (subtotalTotal * (descuento / 100));
 
     // Actualizar venta
     const ventaActualizada = await prisma.venta.update({
@@ -81,16 +134,13 @@ export const updateVenta = async (req, res) => {
         descuento,
         montoFinal,
         detalles: {
-          create: detalles.map(item => ({
-            productoId: item.productoId,
-            precio: item.precio,
-            cantidad: item.cantidad,
-            subtotal: item.subtotal
-          }))
+          create: detallesValidados
         }
       },
       include: { detalles: true }
     });
+
+    // TODO: llamar a servicio catálogo para ajustar stock aquí (diferencia con detalle viejo)
 
     res.json(ventaActualizada);
   } catch (error) {

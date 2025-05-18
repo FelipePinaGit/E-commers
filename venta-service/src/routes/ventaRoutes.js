@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", getVentas);
 router.post("/", createVenta);
-router.put("/:id", updateVenta);        // editar venta
-router.patch("/anular/:id", anularVenta); // anular venta
+router.put("/:id", updateVenta);        
+router.patch("/anular/:id", anularVenta); 
 
 export default router;

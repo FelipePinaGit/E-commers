@@ -9,6 +9,7 @@ import {
   updateCategoria,
   deleteCategoria,
   getProductos,
+  getProductoById,
   createProducto,
   updateProducto,
   deleteProducto,
@@ -30,6 +31,7 @@ router.delete("/categorias/:id", deleteCategoria);    // si agregás deleteCateg
 
 // Productos
 router.get("/productos", getProductos);
+router.get("/productos/:id", getProductoById);
 router.post("/productos", createProducto);
 router.put("/productos/:id", updateProducto);       // si agregás updateProducto
 router.delete("/productos/:id", deleteProducto);      // si agregás deleteProducto

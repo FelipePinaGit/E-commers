@@ -166,6 +166,28 @@ export const createProducto = async (req, res) => {
   }
 };
 
+// Obtener producto por ID
+export const getProductoById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const producto = await prisma.producto.findUnique({
+      where: { id: Number(id) },
+      include: {
+        proveedor: true,
+        categoria: true
+      }
+    });
+
+    if (!producto) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener producto" });
+  }
+};
+
 // Actualizar producto por ID
 export const updateProducto = async (req, res) => {
   const { id } = req.params;
