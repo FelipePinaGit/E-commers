@@ -13,6 +13,7 @@ export const getProveedores = async (req, res) => {
 
 export const createProveedor = async (req, res) => {
   const { rut, nombre, direccion, telefono, paginaWeb } = req.body;
+  console.log("Body recibido:", req.body);
 
   try {
     const nuevoProveedor = await prisma.proveedor.create({
@@ -20,6 +21,10 @@ export const createProveedor = async (req, res) => {
     });
     res.status(201).json(nuevoProveedor);
   } catch (error) {
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: 'Ya existe un proveedor con ese RUT' });
+    }
+    console.error("Error en createProveedor:", error);
     res.status(500).json({ error: "Error al crear proveedor" });
   }
 };

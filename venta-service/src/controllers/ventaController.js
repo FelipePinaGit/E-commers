@@ -14,7 +14,13 @@ export const getVentas = async (req, res) => {
 
 // Crear una nueva venta con detalles
 export const createVenta = async (req, res) => {
+  console.log("Body recibido en venta:", req.body); // 🔍 Ver qué estás enviando
   const { fecha, clienteId, descuento, detalles } = req.body;
+  
+  if (!Array.isArray(detalles)) {
+    return res.status(400).json({ error: "El campo 'detalles' debe ser un array" });
+  }
+
 
   try {
     // Calcular monto final sumando subtotales y aplicando descuento

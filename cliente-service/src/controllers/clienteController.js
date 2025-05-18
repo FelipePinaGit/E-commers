@@ -10,28 +10,28 @@ export const getClientes = async (req, res) => {
 };
 
 export const createCliente = async (req, res) => {
-  const { rut, nombre, direccion, telefonos } = req.body;
+  const { rut, nombre, calle, numero, ciudad, telefonos } = req.body;
 
   try {
     const nuevoCliente = await prisma.cliente.create({
       data: {
         rut,
         nombre,
-        direccion: {
-          create: direccion
-        },
+        calle,
+        numero,
+        ciudad,
         telefonos: {
           create: telefonos.map(numero => ({ numero }))
         }
       },
       include: {
-        direccion: true,
         telefonos: true
       }
     });
 
     res.status(201).json(nuevoCliente);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error al crear el cliente" });
   }
 };

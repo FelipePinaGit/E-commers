@@ -1,146 +1,156 @@
-🛠️ Proyecto de Microservicios – Sistema de Ventas
-Este proyecto implementa un sistema de ventas dividido en 3 microservicios desarrollados con Node.js, Express y Prisma, conectados a bases de datos MySQL independientes.
+📦 Microservicio: Catalogo-Service
 
-📦 Estructura de Microservicios
+📘 README  
+📄 Descripción  
+Este microservicio forma parte de un sistema distribuido para gestión de ventas. El servicio 'catalogo-service' es responsable de la administración de productos, proveedores y categorías. Está desarrollado en Node.js con Express y Prisma ORM.
 
-proyectos/
-└── e-commers/
-    ├── catalogo-service/
-    │   ├── node_modules/
-    │   ├── prisma/
-    │   │   └── schema.prisma
-    │   ├── src/
-    │   │   ├── controllers/
-    │   │   │   └── productoController.js
-    │   │   ├── routes/
-    │   │   │   └── productoRoutes.js
-    │   │   ├── prisma/
-    │   │   │   └── client.js
-    │   │   └── index.js
-    │   └── .env
-    ├── cliente-service/
-    └── venta-service/
+🧱 Estructura del Proyecto
+
+📁 catalogo-service/  
+├── 📁 src/  
+│   ├── 📁 controllers/         # Lógica de negocio  
+│   ├── 📁 prisma/              # Configuración de Prisma y schema  
+│   └── 📁 routes/              # Rutas del servicio  
+├── 📄 .env                     # Variables de entorno  
+├── 📄 package.json             # Configuraciones de npm y scripts  
+└── 📄 README.md                # Documentación del servicio  
+
+🛠 Tecnologías Usadas  
+- Node.js  
+- Express  
+- Prisma  
+- MySQL  
+- dotenv  
+- Axios  
+- Nodemon  
+
+🌐 Endpoints disponibles  
+Ejemplos de rutas (según tus controladores):  
+- GET /productos  
+- POST /productos  
+- GET /categorias  
+- POST /proveedores  
+
+▶️ Scripts disponibles  
+- `npm run dev`: Ejecuta el servidor en modo desarrollo con Nodemon  
+
+📦 REQUERIMIENTOS  
+
+🔧 Comandos por Consola  
+
+1. Inicializar proyecto (desde la carpeta del microservicio)  
+   > npm init -y  
+
+2. Instalar dependencias  
+   > npm install express dotenv prisma @prisma/client nodemon axios  
+
+3. Inicializar Prisma  
+   > npx prisma init  
+
+4. Configurar .env con tu cadena de conexión  
+   > DATABASE_URL="mysql://usuario:password@localhost:3306/catalogo_service"  
+
+5. Crear esquema en prisma/schema.prisma  
+
+6. Generar cliente Prisma y aplicar migración  
+   > npx prisma generate  
+   > npx prisma migrate dev --name init  
+
+7. Ejecutar el servidor (desde la raíz del microservicio)  
+   > npm run dev  
+
+📌 ¿Desde dónde ejecutar cada comando?
+
+✅ Comandos de instalación (npm init, npm install, etc.)  
+➡️ Ejecutalos dentro de **cada carpeta de microservicio**, por ejemplo:
 
 
-⚙️ Requisitos Previos
-Node.js ≥ 18
-npm ≥ 9
-MySQL corriendo localmente
-Visual Studio Code (opcional pero recomendado)
-
-🚀 Pasos para Levantar el Servicio catalogo-service
-1️⃣ Crear estructura del proyecto
-
-mkdir -p proyectos/e-commers
-cd proyectos/e-commers
-mkdir catalogo-service, cliente-service, venta-service
-
-2️⃣ Inicializar Node y modificar package.json
-
-cd catalogo-service
+cd cliente-service
 npm init -y
-Editar package.json y asegurarte de tener:
+npm install express dotenv prisma @prisma/client axios
+npm install --save-dev nodemon
 
-"type": "module",
+
+Y repetís lo mismo dentro de:
+  catalogo-service
+  venta-service
+Cada uno es un proyecto independiente.
+
+✅ Comandos de Prisma (npx prisma init, generate, migrate, etc.)
+➡️ También se ejecutan dentro de cada microservicio, es decir:
+  cd cliente-service
+  npx prisma init
+
+Esto creará una carpeta prisma/ dentro de cliente-service. Luego, también dentro de esa carpeta:
+  npx prisma generate
+  npx prisma migrate dev --name init
+
+⚠️ Nunca los ejecutes desde la raíz del proyecto general (/e-commers), ya que cada microservicio tiene su propia base de datos, dependencias y configuración de Prisma.
+
+✅ ¿Dónde ejecutar npm run dev?
+➡️ También dentro de cada carpeta de microservicio, una vez que ya configuraste el script correspondiente:
+  cd cliente-service
+  npm run dev
+
+Para que funcione, el package.json debe tener esto:
+
 "scripts": {
   "dev": "nodemon src/index.js"
 }
 
-3️⃣ Crear archivos iniciales
+✅ Repetís lo mismo en:
+  catalogo-service
+  venta-service
+Cada uno debe tener su propio package.json y ejecutarse individualmente dentro de su carpeta.
 
-mkdir prisma, src, src/controllers, src/routes, src/prisma
+📬 Uso con Postman
+## Uso de Headers en Postman
+Para realizar las solicitudes HTTP a este microservicio usando Postman, es recomendable configurar los siguientes headers:
+- **Content-Type:** `application/json`  
+  Indica que el cuerpo de la petición está en formato JSON.
+### Cómo agregar el header en Postman:
+1. Abre Postman y selecciona o crea la solicitud que quieres probar.
+2. Ve a la pestaña **Headers**.
+3. Agrega una nueva clave con el nombre `Content-Type`.
+4. Pon el valor `application/json`.
 
-4️⃣ Instalar dependencias
+Esto asegura que el servidor interprete correctamente los datos enviados en el body de la solicitud.
+---
+**Ejemplo de header configurado en Postman:**
 
-npm install express dotenv prisma @prisma/client
+| KEY          | VALUE             |
+|--------------|-------------------|
+| Content-Type | application/json  |
 
-5️⃣ Crear archivo .env
+---
+Con esta configuración, podrás enviar correctamente tus peticiones POST, PUT, PATCH o DELETE con datos en formato JSON.
 
-DATABASE_URL="mysql://usuario:contraseña@localhost:3306/catalogo_service"
-    Reemplazá usuario, contraseña y catalogo_service con tus datos reales.
+A continuación se incluyen ejemplos de solicitudes POST para probar el servicio con Postman.
 
-✍️ Prisma – Definición del Modelo
-Archivo: prisma/schema.prisma
+🟢 POST /productos
 
-generator client {
-  provider = "prisma-client-js"
+{
+  "nombre": "Auriculares Bluetooth",
+  "precioActual": 2500,
+  "stock": 100,
+  "proveedorId": 1,
+  "categoriaId": 1
 }
 
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+🟢 POST /proveedores
+
+{
+  "rut": "12345678001",
+  "nombre": "Proveedor Uno",
+  "direccion": "Av. Corrientes 123",
+  "telefono": "1133344455",
+  "paginaWeb": "https://proveedor1.com"
 }
 
-model Venta {
-  id          Int             @id @default(autoincrement())
-  fecha       DateTime
-  clienteRut  String
-  descuento   Float
-  montoFinal  Float
-  detalles    DetalleVenta[]
+🟢 POST /categorias
+
+{
+  "nombre": "Electrónica",
+  "descripcion": "Dispositivos electrónicos de consumo"
 }
 
-model DetalleVenta {
-  id          Int      @id @default(autoincrement())
-  ventaId     Int
-  productoId  Int
-  precio      Float
-  cantidad    Int
-  subtotal    Float
-  venta       Venta    @relation(fields: [ventaId], references: [id])
-}
-
-
-🛠️ Inicializar Prisma
-
-npx prisma generate
-npx prisma migrate dev --name init
-
-🧠 Código Base en src/
-📁 src/index.js
-
-import express from "express";
-import dotenv from "dotenv";
-import productoRoutes from "./routes/productoRoutes.js";
-
-dotenv.config();
-
-const app = express();
-app.use(express.json());
-
-app.use("/productos", productoRoutes);
-
-const PORT = process.env.PORT || 3002;
-app.listen(PORT, () => {
-  console.log(`📦 Catalogo-service corriendo en http://localhost:${PORT}`);
-});
-
-📁 src/prisma/client.js
-
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-export default prisma;
-
-📁 src/controllers/productoController.js
-
-import prisma from "../prisma/client.js";
-
-export const getProductos = async (req, res) => {
-  try {
-    const productos = await prisma.producto.findMany();
-    res.json(productos);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener productos" });
-  }
-};
-
-📁 src/routes/productoRoutes.js
-
-import express from "express";
-import { getProductos } from "../controllers/productoController.js";
-
-const router = express.Router();
-
-router.get("/", getProductos);
-
-export default router;
