@@ -110,17 +110,21 @@ Cada uno debe tener su propio package.json y ejecutarse individualmente dentro d
 Versión 1
 - Creación de 5 microservicios independientes.
 - Instalación de dependencias iniciales y configuración básica.
+
 Versión 2
 - Reducción a 3 microservicios para mejorar organización y mantenimiento.
 - Instalación de nuevas dependencias necesarias.
 - Creación de endpoints básicos de tipo GET y POST para cada microservicio.
+
 Versión 3
 - Pruebas funcionales con Postman para verificar endpoints.
 - Modificaciones y correcciones en archivos fuente para mejorar el funcionamiento.
+
 Versión 4
 - Implementación de nuevos endpoints PUT (actualizar) y DELETE (eliminar).
 - Verificación y validación exhaustiva mediante Postman.
 - Implementación de lógica para actualización y anulación de ventas sin eliminación física.
+
 Versión 5 (Próxima etapa)
 - Conexión entre microservicios mediante llamadas HTTP para sincronización de datos.
 - Ejemplo: microservicio de ventas consultará catálogo para validar productos y actualizar stock.
