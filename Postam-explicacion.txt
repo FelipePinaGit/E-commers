@@ -1,0 +1,63 @@
+📬 Uso con Postman
+## Uso de Headers en Postman
+Para realizar las solicitudes HTTP a este microservicio usando Postman, es recomendable configurar los siguientes headers:
+- **Content-Type:** `application/json`  
+  Indica que el cuerpo de la petición está en formato JSON.
+### Cómo agregar el header en Postman:
+1. Abre Postman y selecciona o crea la solicitud que quieres probar.
+2. Ve a la pestaña **Headers**.
+3. Agrega una nueva clave con el nombre `Content-Type`.
+4. Pon el valor `application/json`.
+
+Esto asegura que el servidor interprete correctamente los datos enviados en el body de la solicitud.
+---
+**Ejemplo de header configurado en Postman:**
+
+| KEY          | VALUE             |
+|--------------|-------------------|
+| Content-Type | application/json  |
+
+---
+Con esta configuración, podrás enviar correctamente tus peticiones POST, PUT, PATCH o DELETE con datos en formato JSON.
+Con Postman podés probar las distintas operaciones (endpoints) de tu API de clientes para gestionar datos de clientes y sus teléfonos.
+
+1. Ver todos los clientes
+Método: GET
+    URL: http://localhost:<puerto>/clientes
+        Qué hace: Obtiene la lista completa de clientes con sus teléfonos.
+
+2. Crear un cliente nuevo
+Método: POST
+    URL: http://localhost:<puerto>/clientes
+    Body (JSON):
+
+{
+  "rut": "20123456789",
+  "nombre": "Juan Pérez",
+  "calle": "Av. Libertad",
+  "numero": 123,
+  "ciudad": "Buenos Aires",
+  "telefonos": ["1145678901", "1198765432"]
+}
+        Qué hace: Crea un cliente nuevo con los datos y teléfonos proporcionados.
+
+3. Editar un cliente (actualizar datos completos o parciales)
+Método: PUT
+URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
+    Body (JSON) con los datos que querés modificar, por ejemplo, solo cambiar la ciudad:
+
+{
+  "ciudad": "Rosario"
+}
+        Qué hace: Actualiza los datos del cliente identificado por el rut. Si incluís teléfonos,
+        reemplaza todos los teléfonos anteriores por los nuevos. Si no querés cambiar teléfonos, simplemente omitilos en el body.
+
+4. Eliminar un cliente
+Método: DELETE
+    URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
+        Qué hace: Elimina el cliente y todos sus teléfonos relacionados.
+
+Consejos
+    Usá la pestaña Body > raw > JSON para enviar datos en POST y PUT.
+    Verificá que el servidor esté corriendo y que uses el puerto correcto en la URL.    
+    Revisá la respuesta de cada solicitud para confirmar que la operación fue exitosa o para ver errores.

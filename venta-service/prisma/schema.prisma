@@ -13,6 +13,7 @@ model Venta {
   descuento   Float
   montoFinal  Float
   clienteId   String
+  estado      String         @default("activa") // 👈 activa | anulada
 
   detalles    DetalleVenta[]
 }

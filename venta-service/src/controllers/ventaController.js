@@ -51,3 +51,76 @@ export const createVenta = async (req, res) => {
     res.status(500).json({ error: "Error al crear la venta" });
   }
 };
+
+// Editar una venta existente
+export const updateVenta = async (req, res) => {
+  const { id } = req.params;
+  const { detalles, descuento } = req.body;
+
+  try {
+    const ventaExistente = await prisma.venta.findUnique({
+      where: { id: parseInt(id) },
+      include: { detalles: true },
+    });
+
+    if (!ventaExistente) {
+      return res.status(404).json({ error: "Venta no encontrada" });
+    }
+
+    // Borrar detalles anteriores
+    await prisma.detalleVenta.deleteMany({ where: { ventaId: ventaExistente.id } });
+
+    // Calcular nuevo monto final
+    const subtotalTotal = detalles.reduce((acc, item) => acc + item.subtotal, 0);
+    const montoFinal = subtotalTotal - (subtotalTotal * (descuento / 100));
+
+    // Actualizar venta
+    const ventaActualizada = await prisma.venta.update({
+      where: { id: parseInt(id) },
+      data: {
+        descuento,
+        montoFinal,
+        detalles: {
+          create: detalles.map(item => ({
+            productoId: item.productoId,
+            precio: item.precio,
+            cantidad: item.cantidad,
+            subtotal: item.subtotal
+          }))
+        }
+      },
+      include: { detalles: true }
+    });
+
+    res.json(ventaActualizada);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al editar la venta" });
+  }
+};
+
+// Anular venta
+export const anularVenta = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const venta = await prisma.venta.findUnique({ where: { id: parseInt(id) } });
+
+    if (!venta) {
+      return res.status(404).json({ error: "Venta no encontrada" });
+    }
+
+    if (venta.estado === "anulada") {
+      return res.status(400).json({ error: "La venta ya fue anulada" });
+    }
+
+    const ventaAnulada = await prisma.venta.update({
+      where: { id: parseInt(id) },
+      data: { estado: "anulada" }
+    });
+
+    res.json({ mensaje: "Venta anulada", venta: ventaAnulada });
+  } catch (error) {
+    res.status(500).json({ error: "Error al anular la venta" });
+  }
+};
