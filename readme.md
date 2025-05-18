@@ -107,6 +107,7 @@ Para que funcione, el package.json debe tener esto:
 Cada uno debe tener su propio package.json y ejecutarse individualmente dentro de su carpeta.
 
 📝 Evolución del Proyecto
+
 Versión 1
 - Creación de 5 microservicios independientes.
 - Instalación de dependencias iniciales y configuración básica.
