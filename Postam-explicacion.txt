@@ -21,6 +21,8 @@ Esto asegura que el servidor interprete correctamente los datos enviados en el b
 Con esta configuración, podrás enviar correctamente tus peticiones POST, PUT, PATCH o DELETE con datos en formato JSON.
 Con Postman podés probar las distintas operaciones (endpoints) de tu API de clientes para gestionar datos de clientes y sus teléfonos.
 
+Microservicio Cliente
+
 1. Ver todos los clientes
 Método: GET
     URL: http://localhost:<puerto>/clientes
@@ -34,7 +36,7 @@ Método: POST
 {
   "rut": "20123456789",
   "nombre": "Juan Pérez",
-  "calle": "Av. Libertad",
+  "calle": "Av. Libertad", 
   "numero": 123,
   "ciudad": "Buenos Aires",
   "telefonos": ["1145678901", "1198765432"]
@@ -57,7 +59,101 @@ Método: DELETE
     URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
         Qué hace: Elimina el cliente y todos sus teléfonos relacionados.
 
-Consejos
-    Usá la pestaña Body > raw > JSON para enviar datos en POST y PUT.
-    Verificá que el servidor esté corriendo y que uses el puerto correcto en la URL.    
-    Revisá la respuesta de cada solicitud para confirmar que la operación fue exitosa o para ver errores.
+
+Microservicio Catálogo
+Este servicio maneja productos, categorías y proveedores. Con Postman podés probar los endpoints para consultar, crear, modificar y eliminar productos, así como actualizar el stock.
+
+Ejemplos de operaciones:
+
+Obtener todos los productos
+Método: GET
+  URL: http://localhost:<puerto>/api/productos
+Qué hace: Devuelve la lista completa de productos.
+
+Obtener un producto por ID
+Método: GET
+  URL: http://localhost:<puerto>/api/productoss/:id (Ejemplo: /productos/1)
+Qué hace: Devuelve los datos del producto solicitado.
+
+Crear un nuevo producto
+Método: POST
+  URL: http://localhost:<puerto>/api/productos
+  Body (JSON):
+
+{
+  "nombre": "Filtro de aceite",
+  "precio": 1500,
+  "stock": 20,
+  "categoriaId": 3,
+  "proveedorId": 2
+}
+
+Qué hace: Agrega un producto nuevo con los datos especificados.
+
+Actualizar un producto (ej. stock o precio)
+Método: PUT
+  URL: http://localhost:<puerto>/api/productos:id
+  Body (JSON):
+
+{
+  "stock": 15
+}
+
+Qué hace: Actualiza el producto con el ID dado, modificando solo los campos enviados.
+
+Eliminar un producto
+Método: DELETE
+  URL: http://localhost:<puerto>/api/productos/:id
+Qué hace: Elimina el producto indicado.
+
+Microservicio Ventas
+Este servicio registra ventas y gestiona la lógica de stock y anulación. Usá Postman para probar creación, consulta, actualización y anulación de ventas.
+
+Ejemplos de operaciones:
+
+Crear una venta
+Método: POST
+  URL: http://localhost:<puerto>/ventas (ajustar puerto si es necesario)
+  Body (JSON):
+
+{
+  "fecha": "2025-05-19",
+  "clienteId": "20123456789", (rut)
+  "descuento": 5,
+  "detalles": [
+    { "productoId": 1, "cantidad": 2 },
+    { "productoId": 3, "cantidad": 1 }
+  ]
+}
+
+Qué hace: Registra una nueva venta, valida stock en catálogo y descuenta las cantidades vendidas.
+
+Obtener todas las ventas
+Método: GET
+  URL: http://localhost:<puerto>/ventas
+Qué hace: Devuelve todas las ventas registradas.
+
+Actualizar una venta
+Método: PUT
+  URL: http://localhost:<puerto>/ventas:id
+  Body (JSON):
+
+{
+  "descuento": 10
+}
+
+Qué hace: Modifica la venta con el ID especificado (por ejemplo, cambiar descuento o productos).
+
+Anular una venta
+Método: PUT
+  URL: http://localhost:<puerto>/ventas/:id/anular
+Qué hace: Cambia el estado de la venta a "ANULADA" y devuelve el stock al catálogo.
+
+Consejos generales para usar Postman
+Siempre usar la pestaña Body > raw > JSON para enviar datos en POST y PUT.
+
+Verificar que los microservicios estén corriendo y que la URL y puerto sean correctos.
+
+Revisar la respuesta del servidor para confirmar éxito o detectar errores.
+
+Usar la consola de Postman para ver detalles de la solicitud y respuesta si hay problemas.

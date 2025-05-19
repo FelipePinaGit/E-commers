@@ -1,0 +1,58 @@
+Explicación completa de la conexión entre microservicio de Ventas y microservicio de Catálogo 
+En una arquitectura de microservicios, cada servicio es independiente y debe comunicarse entre sí para compartir datos relevantes. En nuestro proyecto, el microservicio Ventas depende del microservicio Catálogo para validar y obtener información actualizada de los productos (precio, stock, existencia).
+
+¿Por qué conectar ventas con catálogo?
+Validar stock y existencia: Para evitar vender productos agotados o inexistentes.
+
+Obtener precio vigente: El precio puede cambiar, así que ventas debe consultar el precio actualizado en catálogo.
+
+Actualizar stock: Luego de concretar una venta, hay que descontar el stock correspondiente en catálogo.
+
+¿Cómo se realiza la comunicación?
+Uso de HTTP REST vía Axios
+El microservicio ventas hace peticiones HTTP hacia catálogo. Para eso, usamos la librería axios que permite realizar solicitudes GET, PUT, POST, etc.
+
+Archivo .env para configurar URLs
+En lugar de hardcodear la URL del microservicio catálogo en el código (por ejemplo http://localhost:3000/api), usamos un archivo .env para definir variables de entorno que almacenan estas URLs. Esto tiene varias ventajas:
+
+Flexibilidad: Podemos cambiar la URL del servicio sin tocar el código (por ejemplo, en producción la URL es distinta).
+
+Seguridad: Evita exponer URLs o credenciales directamente en el código fuente.
+
+Facilidad para distintos entornos: Dev, test, producción pueden tener configuraciones distintas.
+
+Ejemplo de .env en venta-service:
+
+
+CATALOGO_BASE_URL=http://localhost:3000/api
+Luego en el código se lee así:
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+const CATALOGO_BASE_URL = process.env.CATALOGO_BASE_URL;
+Flujo para registrar una venta con validación y actualización de stock
+
+Se recibe una solicitud para crear una venta con cliente y lista de productos con cantidades.
+
+Para cada producto:
+
+Se hace GET ${CATALOGO_BASE_URL}/productos/:id para obtener info actual.
+
+Se verifica stock suficiente.
+
+Se calcula subtotal según precio actual.
+
+Si algún producto no pasa validación, se cancela la venta con error.
+
+Si todo está ok, se guarda la venta en la base de datos local.
+
+Después, para cada producto vendido, se hace PUT ${CATALOGO_BASE_URL}/productos/:id con el nuevo stock (stock actual - cantidad vendida).
+
+Se devuelve confirmación con detalles.
+
+Manejo de errores
+
+Si no se puede obtener info del producto o actualizar stock, se maneja el error con mensajes claros y no se guarda la venta.
+
+Esto asegura la integridad de datos y evita ventas inconsistentes.

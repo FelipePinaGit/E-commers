@@ -1,6 +1,6 @@
 import prisma from "../prisma/client.js";
 import { obtenerProducto } from "../services/catalogoService.js";
-
+import { actualizarStock} from "../services/catalogoService.js";
 
 // Obtener todas las ventas
 export const getVentas = async (req, res) => {
@@ -66,7 +66,16 @@ export const createVenta = async (req, res) => {
       include: { detalles: true }
     });
 
-    // TODO: llamar a servicio catálogo para descontar stock aquí
+    // 🔻 Descontar stock en catálogo
+    for (const item of detallesValidados) {
+  const nuevoStock = item.cantidad; // cantidad vendida
+  try {
+    const producto = await obtenerProducto(item.productoId);
+    await actualizarStock(item.productoId, producto.stock - nuevoStock);
+  } catch (error) {
+    console.error(`Fallo al actualizar el stock del producto ${item.productoId}`);
+  }
+}
 
     res.status(201).json(nuevaVenta);
   } catch (error) {
@@ -149,28 +158,46 @@ export const updateVenta = async (req, res) => {
   }
 };
 
-// Anular venta
+
+// Anular una venta y devolver stock
 export const anularVenta = async (req, res) => {
-  const { id } = req.params;
+  const ventaId = parseInt(req.params.id);
 
   try {
-    const venta = await prisma.venta.findUnique({ where: { id: parseInt(id) } });
+    const venta = await prisma.venta.findUnique({
+      where: { id: ventaId },
+      include: { detalles: true },
+    });
 
     if (!venta) {
       return res.status(404).json({ error: "Venta no encontrada" });
     }
 
-    if (venta.estado === "anulada") {
+    if (venta.estado === "ANULADA") {
       return res.status(400).json({ error: "La venta ya fue anulada" });
     }
 
-    const ventaAnulada = await prisma.venta.update({
-      where: { id: parseInt(id) },
-      data: { estado: "anulada" }
+    // Marcar venta como anulada
+    await prisma.venta.update({
+      where: { id: ventaId },
+      data: { estado: "ANULADA" },
     });
 
-    res.json({ mensaje: "Venta anulada", venta: ventaAnulada });
+    // Devolver stock de cada producto
+    for (const detalle of venta.detalles) {
+      const producto = await obtenerProducto(detalle.productoId);
+      if (!producto) {
+        console.warn(`Producto con ID ${detalle.productoId} no encontrado, omitiendo`);
+        continue;
+      }
+
+      const nuevoStock = producto.stock + detalle.cantidad;
+      await actualizarStock(detalle.productoId, nuevoStock);
+    }
+
+    res.json({ mensaje: "Venta anulada y stock devuelto correctamente" });
   } catch (error) {
+    console.error("Error al anular la venta:", error.message);
     res.status(500).json({ error: "Error al anular la venta" });
   }
 };

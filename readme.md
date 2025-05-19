@@ -108,43 +108,93 @@ Cada uno debe tener su propio package.json y ejecutarse individualmente dentro d
 
 📝 Evolución del Proyecto
 
-Versión 1
-  
-  Creación de 5 microservicios independientes.
-  Instalación de dependencias iniciales y configuración básica.
+✅ Versión 1 – Estructura Inicial del Proyecto
+⚙️ Cambios realizados
 
-Versión 2
+Creación de 5 microservicios independientes para cada área funcional del sistema.
 
-  Reducción a 3 microservicios para mejorar organización y mantenimiento.
-  Instalación de nuevas dependencias necesarias.
-  Creación de endpoints básicos de tipo GET y POST para cada microservicio.
+Instalación de dependencias base y configuración mínima para cada servicio.
 
-Versión 3
+✅ Versión 2 – Reorganización en 3 Microservicios
+⚙️ Cambios realizados
 
-  Pruebas funcionales con Postman para verificar endpoints.
-  Modificaciones y correcciones en archivos fuente para mejorar el funcionamiento.
+Simplificación de arquitectura: Se reorganizó el proyecto en 3 microservicios principales:
 
-Versión 4
+catalogo-service (productos, categorías, proveedores),
 
-  Implementación de nuevos endpoints PUT (actualizar) y DELETE (eliminar).
-  Verificación y validación exhaustiva mediante Postman.
-  Implementación de lógica para actualización y anulación de ventas sin eliminación física.
+cliente-service,
 
-Versión 5
+venta-service.
 
-  Integración completa entre microservicio de ventas y catálogo mediante llamadas HTTP.
-  Validación y obtención dinámica de datos de producto (precio, stock) desde catalogo-service antes de registrar la venta.
-  Ajuste del tipo de dato clienteId para que coincida con el formato RUT (String) usado en cliente-service, evitando errores de Prisma
-  Cálculo correcto de subtotales y monto final con descuento aplicado en el microservicio de ventas.
-  Manejo de errores robusto para evitar creación de ventas inconsistentes (stock insuficiente, producto no encontrado).
-  Confirmación del correcto funcionamiento y respuesta JSON completa con detalles de la venta y sus productos asociados.
+Instalación de dependencias necesarias.
 
-Versión 6(Planificación)
+Implementación de endpoints GET y POST básicos para cada microservicio.
 
-  Implementar la lógica para descontar el stock de productos en catálogo-service cuando se registre una venta en ventas-service.
-  Sincronización entre servicios para mantener consistencia del stock en tiempo real.
-  Evaluar e implementar control de concurrencia para evitar sobreventa de productos.
-  Añadir endpoint para consultar stock actualizado en catálogo-service.
-  Mejorar manejo de errores y reintentos en caso de fallo en la comunicación entre microservicios.
-  Añadir logs detallados y monitoreo para detectar y prevenir inconsistencias de stock.
+✅ Versión 3 – Validación de Endpoints
+⚙️ Cambios realizados
 
+Uso de Postman para realizar pruebas de los endpoints creados.
+
+Correcciones en archivos fuente para mejorar la funcionalidad y resolver errores.
+
+Validación de estructuras JSON y rutas.
+
+✅ Versión 4 – Actualización y Anulación de Registros
+⚙️ Cambios realizados
+
+Creación de endpoints PUT y DELETE.
+
+Se implementa la lógica para:
+
+Actualizar ventas (por cambios en producto o cantidad),
+
+Anular ventas sin eliminación física.
+
+Pruebas intensivas con Postman para verificar correcto funcionamiento.
+
+✅ Versión 5 – Integración entre Ventas y Catálogo
+⚙️ Cambios realizados
+
+Conexión directa entre venta-service y catalogo-service mediante llamadas HTTP con axios.
+
+Validación previa al registrar una venta:
+
+Obtención del producto desde catálogo.
+
+Validación de stock disponible.
+
+Obtención del precio actual del producto.
+
+Cambio del tipo clienteId a String (RUT) para compatibilidad con cliente-service.
+
+Cálculo de subtotales, descuento y monto final correctamente.
+
+Implementación de manejo de errores para evitar ventas inválidas o inconsistentes.
+
+Respuesta JSON final con toda la información relacionada a la venta.
+
+✅ Versión 6 – Gestión de Stock integrada con Ventas
+
+🔧 Cambios en catalogo-service
+Nuevo endpoint PUT /api/productos/:id/stock para actualizar solo el stock de un producto.
+
+🔧 Cambios en venta-service
+Validación de stock antes de registrar venta.
+
+Descuento automático de stock al registrar una venta exitosa.
+
+Anulación de ventas con:
+
+Cambio de estado a "ANULADA".
+
+Devolución de stock a los productos involucrados.
+
+🧪 Pruebas realizadas
+Postman utilizado para testear todas las funcionalidades mencionadas.
+
+🚀 Versión 7 – Implementación del Frontend
+🎨 Objetivo
+
+Inicio del desarrollo de la interfaz de usuario del sistema de ventas.
+
+El frontend consumirá los endpoints expuestos por los microservicios existentes (ventas, clientes, catálogo).
