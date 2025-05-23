@@ -5,6 +5,7 @@ import ClienteTable from '../components/ClienteTable';
 import ClienteForm from '../components/ClienteForm';
 import { Cliente, getClientes } from '../services/clienteService';
 import { Plus, RefreshCw } from 'lucide-react';
+import { useCarrito } from '../context/CarritoContext'; // Paso 4
 
 const Clientes = () => {
   const { user } = useAuth();
@@ -13,6 +14,7 @@ const Clientes = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
+  const { carrito, quitarProducto, limpiarCarrito } = useCarrito(); // Paso 4
 
   // Solo usuarios admin pueden acceder a esta página
   if (user?.role !== 'admin') {
@@ -110,6 +112,32 @@ const Clientes = () => {
           onClose={handleFormClose}
           onSaved={handleClienteSaved}
         />
+      )}
+
+      {/* Mostrar carrito si el usuario no es admin */}
+      {user?.role !== 'admin' && carrito.length > 0 && (
+        <div className="mt-8 p-4 border rounded-md bg-gray-100">
+          <h2 className="text-lg font-semibold mb-2">🛒 Carrito</h2>
+          <ul className="space-y-1">
+            {carrito.map(({ producto, cantidad }) => (
+              <li key={producto.id} className="flex justify-between">
+                <span>{producto.nombre} x {cantidad}</span>
+                <button
+                  onClick={() => quitarProducto(producto.id!)}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Quitar
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={limpiarCarrito}
+            className="mt-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+          >
+            Vaciar carrito
+          </button>
+        </div>
       )}
     </div>
   );

@@ -8,19 +8,20 @@ import Productos from './pages/Productos';
 import Ventas from './pages/Ventas';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import Carrito from './pages/CarritoPage'; // 👈 importamos la nueva página
 
 // Protected route component
 const ProtectedRoute = ({ children, allowedRoles }: { children: JSX.Element, allowedRoles: string[] }) => {
   const { user, isAuthenticated } = useAuth();
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   if (allowedRoles && !allowedRoles.includes(user?.role || '')) {
     return <Navigate to="/dashboard" replace />;
   }
-  
+
   return children;
 };
 
@@ -28,7 +29,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      
+
       <Route 
         path="/clientes" 
         element={
@@ -37,7 +38,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      
+
       <Route 
         path="/productos" 
         element={
@@ -46,7 +47,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      
+
       <Route 
         path="/ventas" 
         element={
@@ -55,7 +56,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      
+
       <Route 
         path="/dashboard" 
         element={
@@ -65,12 +66,19 @@ const AppRoutes = () => {
         } 
       />
 
-      
-      
+      <Route 
+        path="/carrito"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <Carrito />
+          </ProtectedRoute>
+        }
+      />
+
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
 
-export default AppRoutes
+export default AppRoutes;

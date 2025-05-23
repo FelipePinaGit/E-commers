@@ -10,6 +10,8 @@ interface ProductoTableProps {
   agregarAlCarrito?: (producto: Producto) => void; // Nueva prop opcional
 }
 
+// ...importaciones
+
 const ProductoTable = ({ productos, onEdit, onDeleted, isAdmin, agregarAlCarrito }: ProductoTableProps) => {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -123,7 +125,7 @@ const ProductoTable = ({ productos, onEdit, onDeleted, isAdmin, agregarAlCarrito
                         </>
                       ) : (
                         <button
-                          className="p-1 text-green-600 hover:text-green-900"
+                          className={`p-1 rounded ${producto.stock === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-green-600 hover:text-green-900'}`}
                           onClick={() => agregarAlCarrito && agregarAlCarrito(producto)}
                           disabled={producto.stock === 0}
                           title={producto.stock === 0 ? 'Producto sin stock' : 'Agregar al carrito'}

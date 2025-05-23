@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Users, Package, Activity } from 'lucide-react'; // mantengo estos iconos
+import { useCarrito } from '../context/CarritoContext';
+import { Users, Package, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getProductos } from '../services/productoService';
 
@@ -38,6 +39,7 @@ const DashboardCard = ({ title, value, icon, color, linkTo }: DashboardCardProps
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { carrito } = useCarrito();
   const [productCount, setProductCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -108,6 +110,16 @@ const Dashboard = () => {
             icon={<Activity className="h-8 w-8 text-purple-600" />} 
             color="border-purple-500"
           />
+
+          {user?.role !== 'admin' && (
+            <DashboardCard 
+              title="Productos en Carrito" 
+              value={carrito.length} 
+              icon={<Package className="h-8 w-8 text-pink-600" />} 
+              color="border-pink-500"
+              linkTo="/carrito"
+            />
+          )}
         </div>
       </div>
 
@@ -137,12 +149,28 @@ const Dashboard = () => {
               ) : (
                 <>
                   <li>Ver catálogo de Productos</li>
+                  <li>Agregar productos al carrito</li>
                 </>
               )}
             </ul>
           </div>
         </div>
       </div>
+
+      {/* Aquí mostramos los productos con cantidad y precio total por producto */}
+      {user?.role !== 'admin' && carrito.length > 0 && (
+        <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Productos en tu carrito</h2>
+          <ul className="divide-y divide-gray-200">
+            {carrito.map(({ producto, cantidad }) => (
+              <li key={producto.id} className="py-2 flex justify-between items-center">
+                <span className="text-gray-700">{producto.nombre} x {cantidad}</span>
+                <span className="font-semibold text-gray-800">${(producto.precioActual * cantidad).toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
