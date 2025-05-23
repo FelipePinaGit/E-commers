@@ -173,14 +173,14 @@ export const anularVenta = async (req, res) => {
       return res.status(404).json({ error: "Venta no encontrada" });
     }
 
-    if (venta.estado === "ANULADA") {
+    if (venta.estado === "Anulada") {
       return res.status(400).json({ error: "La venta ya fue anulada" });
     }
 
     // Marcar venta como anulada
     await prisma.venta.update({
       where: { id: ventaId },
-      data: { estado: "ANULADA" },
+      data: { estado: "Anulada" },
     });
 
     // Devolver stock de cada producto

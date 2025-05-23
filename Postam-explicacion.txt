@@ -25,12 +25,12 @@ Microservicio Cliente
 
 1. Ver todos los clientes
 Método: GET
-    URL: http://localhost:<puerto>/clientes
+    URL: http://localhost:35000/clientes
         Qué hace: Obtiene la lista completa de clientes con sus teléfonos.
 
 2. Crear un cliente nuevo
 Método: POST
-    URL: http://localhost:<puerto>/clientes
+    URL: http://localhost:5000/clientes
     Body (JSON):
 
 {
@@ -45,7 +45,7 @@ Método: POST
 
 3. Editar un cliente (actualizar datos completos o parciales)
 Método: PUT
-URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
+URL: http://localhost:<5000/clientes/:rut (Ejemplo: /clientes/20123456789)
     Body (JSON) con los datos que querés modificar, por ejemplo, solo cambiar la ciudad:
 
 {
@@ -56,7 +56,7 @@ URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
 
 4. Eliminar un cliente
 Método: DELETE
-    URL: http://localhost:<puerto>/clientes/:rut (Ejemplo: /clientes/20123456789)
+    URL: http://localhost:5000/clientes/:rut (Ejemplo: /clientes/20123456789)
         Qué hace: Elimina el cliente y todos sus teléfonos relacionados.
 
 
@@ -67,17 +67,17 @@ Ejemplos de operaciones:
 
 Obtener todos los productos
 Método: GET
-  URL: http://localhost:<puerto>/api/productos
+  URL: http://localhost:3000/api/productos
 Qué hace: Devuelve la lista completa de productos.
 
 Obtener un producto por ID
 Método: GET
-  URL: http://localhost:<puerto>/api/productoss/:id (Ejemplo: /productos/1)
+  URL: http://localhost:3000/api/productoss/:id (Ejemplo: /productos/1)
 Qué hace: Devuelve los datos del producto solicitado.
 
 Crear un nuevo producto
 Método: POST
-  URL: http://localhost:<puerto>/api/productos
+  URL: http://localhost:3000/api/productos
   Body (JSON):
 
 {
@@ -92,7 +92,7 @@ Qué hace: Agrega un producto nuevo con los datos especificados.
 
 Actualizar un producto (ej. stock o precio)
 Método: PUT
-  URL: http://localhost:<puerto>/api/productos:id
+  URL: http://localhost:3000/api/productos:id
   Body (JSON):
 
 {
@@ -103,7 +103,7 @@ Qué hace: Actualiza el producto con el ID dado, modificando solo los campos env
 
 Eliminar un producto
 Método: DELETE
-  URL: http://localhost:<puerto>/api/productos/:id
+  URL: http://localhost:3000/api/productos/:id
 Qué hace: Elimina el producto indicado.
 
 Microservicio Ventas
@@ -113,7 +113,7 @@ Ejemplos de operaciones:
 
 Crear una venta
 Método: POST
-  URL: http://localhost:<puerto>/ventas (ajustar puerto si es necesario)
+  URL: http://localhost:4000/ventas (ajustar puerto si es necesario)
   Body (JSON):
 
 {
@@ -130,12 +130,12 @@ Qué hace: Registra una nueva venta, valida stock en catálogo y descuenta las c
 
 Obtener todas las ventas
 Método: GET
-  URL: http://localhost:<puerto>/ventas
+  URL: http://localhost:4000/ventas
 Qué hace: Devuelve todas las ventas registradas.
 
 Actualizar una venta
 Método: PUT
-  URL: http://localhost:<puerto>/ventas:id
+  URL: http://localhost:4000/ventas:id
   Body (JSON):
 
 {
@@ -146,7 +146,7 @@ Qué hace: Modifica la venta con el ID especificado (por ejemplo, cambiar descue
 
 Anular una venta
 Método: PUT
-  URL: http://localhost:<puerto>/ventas/:id/anular
+  URL: http://localhost:4000/ventas/:id/anular
 Qué hace: Cambia el estado de la venta a "ANULADA" y devuelve el stock al catálogo.
 
 Consejos generales para usar Postman
