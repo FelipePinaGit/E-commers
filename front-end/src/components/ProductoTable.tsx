@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Producto, deleteProducto } from '../services/productoService';
-import { Edit, Trash2, AlertCircle, ShoppingCart, Package } from 'lucide-react';
+import { Edit, Trash2, AlertCircle, ShoppingCart } from 'lucide-react';
 
 interface ProductoTableProps {
-  productos: Producto[];
+  productos: (Producto & { imagenUrl?: string })[];
   onEdit: (producto: Producto) => void;
   onDeleted: () => void;
   isAdmin: boolean;
-  agregarAlCarrito?: (producto: Producto) => void; // Nueva prop opcional
+  agregarAlCarrito?: (producto: Producto) => void;
 }
-
-// ...importaciones
 
 const ProductoTable = ({ productos, onEdit, onDeleted, isAdmin, agregarAlCarrito }: ProductoTableProps) => {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
@@ -74,7 +72,15 @@ const ProductoTable = ({ productos, onEdit, onDeleted, isAdmin, agregarAlCarrito
             className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="h-48 bg-gray-100 flex items-center justify-center">
-              <Package className="h-16 w-16 text-gray-400" />
+              <img
+                src={`/producto/${producto.id}.jpeg`}
+                alt={producto.nombre}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).onerror = null;
+                  (e.currentTarget as HTMLImageElement).src = '/producto/default.jpeg';
+                }}
+              />
             </div>
 
             <div className="p-4">
@@ -125,7 +131,9 @@ const ProductoTable = ({ productos, onEdit, onDeleted, isAdmin, agregarAlCarrito
                         </>
                       ) : (
                         <button
-                          className={`p-1 rounded ${producto.stock === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-green-600 hover:text-green-900'}`}
+                          className={`p-1 rounded ${
+                            producto.stock === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-green-600 hover:text-green-900'
+                          }`}
                           onClick={() => agregarAlCarrito && agregarAlCarrito(producto)}
                           disabled={producto.stock === 0}
                           title={producto.stock === 0 ? 'Producto sin stock' : 'Agregar al carrito'}

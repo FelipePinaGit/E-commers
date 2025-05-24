@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getVentas, anularVenta, Venta } from '../services/ventaService';
 
 export const VentasTable = () => {
@@ -31,30 +31,35 @@ export const VentasTable = () => {
           <th>ID</th>
           <th>Fecha</th>
           <th>Cliente</th>
-          <th>Descuento %</th>
           <th>Monto Final</th>
+          <th>Total</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {ventas.map((venta) => (
-          <tr key={venta.id}>
-            <td>{venta.id}</td>
-            <td>{new Date(venta.fecha).toLocaleDateString()}</td>
-            <td>{venta.cliente?.nombre || venta.clienteId}</td>
-            <td>{venta.descuento}</td>
-            <td>{venta.montoFinal.toFixed(2)}</td>
-            <td>{venta.estado}</td>
-            <td>
-              {venta.estado === 'activa' && (
-                <button onClick={() => handleAnular(venta.id)}>Anular</button>
-              )}
-            </td>
-          </tr>
-        ))}
+        {ventas.map((venta) => {
+          const montoNeto = venta.montoFinal;
+
+          return (
+            <tr key={venta.id}>
+              <td>{venta.id}</td>
+              <td>{new Date(venta.fecha).toLocaleDateString()}</td>
+              <td>{venta.cliente?.nombre || venta.clienteId}</td>
+              <td>{venta.montoFinal.toFixed(2)}</td>
+              <td>Total: ${montoNeto.toFixed(2)}</td>
+              <td>{venta.estado}</td>
+              <td>
+                {venta.estado === 'activa' && (
+                  <button onClick={() => handleAnular(venta.id)}>Anular</button>
+                )}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
 };
+
 export default VentasTable;

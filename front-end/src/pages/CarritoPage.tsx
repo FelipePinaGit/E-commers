@@ -5,23 +5,22 @@ import { useState } from 'react';
 import { createVenta, Venta } from '../services/ventaService';
 
 const Carrito = () => {
-  const { carrito, limpiarCarrito } = useCarrito();
+  const {
+    carrito,
+    limpiarCarrito,
+    obtenerTotal,
+  } = useCarrito();
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
-  const [descuento, setDescuento] = useState(0);
-
-  const calcularMontoFinal = () => {
-    const suma = carrito.reduce(
-      (acc, { producto, cantidad }) => acc + producto.precioActual * cantidad,
-      0
-    );
-    return Math.max(suma - descuento, 0);
-  };
 
   const handleFinalizarCompra = async () => {
-    if (!user || user.role === 'admin') return;
+    if (!user || user.role === 'admin') {
+      setMensaje('❌ Debes estar logueado como cliente para realizar la compra.');
+      return;
+    }
 
     if (carrito.length === 0) {
       setMensaje('❌ El carrito está vacío.');
@@ -32,18 +31,15 @@ const Carrito = () => {
     setMensaje(null);
 
     try {
-      const detalles = carrito.map(({ producto, cantidad }) => {
-        const precio = producto.precioActual;
-        const subtotal = precio * cantidad;
-        return {
-          productoId: producto.id,
-          cantidad,
-          precio,
-          subtotal,
-        };
-      });
+      const detalles = carrito.map(({ producto, cantidad }) => ({
+        productoId: producto.id,
+        cantidad,
+        precio: producto.precioActual,
+        subtotal: producto.precioActual * cantidad,
+      }));
 
-      const montoFinal = calcularMontoFinal();
+      const montoFinal = obtenerTotal();
+      const descuento = 0;
 
       const ventaPayload: Omit<Venta, 'id' | 'cliente' | 'detalles'> & {
         detalles: Partial<Venta['detalles'][number]>[];
@@ -81,24 +77,13 @@ const Carrito = () => {
             {carrito.map(({ producto, cantidad }) => (
               <li key={producto.id} className="py-2 flex justify-between">
                 <span>{producto.nombre} x {cantidad}</span>
-                <span className="font-medium">${producto.precioActual * cantidad}</span>
+                <span className="font-medium">${(producto.precioActual * cantidad).toFixed(2)}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Descuento</label>
-            <input
-              type="number"
-              className="border p-2 rounded w-full"
-              value={descuento}
-              min={0}
-              onChange={(e) => setDescuento(Number(e.target.value))}
-            />
-          </div>
-
           <div className="mb-4 font-bold text-lg">
-            Monto final: ${calcularMontoFinal()}
+            Monto final: ${obtenerTotal().toFixed(2)}
           </div>
 
           {mensaje && <div className="mb-4 text-sm text-center">{mensaje}</div>}

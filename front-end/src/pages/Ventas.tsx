@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import VentaForm from '../components/VentaForm';
-import { Venta, getVentas, anularVenta } from '../services/ventaService'; // Importamos anularVenta
+import { Venta, getVentas, anularVenta } from '../services/ventaService';
 import { Plus, RefreshCw } from 'lucide-react';
 
 const Ventas = () => {
@@ -45,7 +45,6 @@ const Ventas = () => {
     }
   };
 
-  // Nueva función para anular venta
   const handleAnularVenta = async (id: number) => {
     if (!confirm('¿Estás seguro que querés anular esta venta?')) return;
     try {
@@ -57,7 +56,6 @@ const Ventas = () => {
     }
   };
 
-  // Función para devolver color según estado de venta
   const getEstadoColor = (estado: string) => {
     switch (estado.toLowerCase()) {
       case 'activa':
@@ -111,54 +109,58 @@ const Ventas = () => {
         <p className="text-center text-gray-600">No hay ventas para mostrar.</p>
       ) : (
         <div className="space-y-4">
-          {ventas.map((venta) => (
-            <div
-              key={venta.id}
-              className="flex flex-col md:flex-row md:items-center md:justify-between bg-white rounded-lg shadow-sm p-4 border border-gray-200"
-            >
-              <div className="flex flex-col space-y-1 md:flex-row md:space-y-0 md:space-x-6 md:items-center flex-1">
-                <span className="font-semibold text-gray-800">ID: {venta.id}</span>
-                <span className="text-gray-600">Cliente: {venta.clienteId || '—'}</span>
-                <span className="text-gray-600">Fecha: {new Date(venta.fecha).toLocaleDateString()}</span>
-                <span className="text-gray-600">Total: ${venta.montoFinal.toFixed(2)}</span>
-                <span
-                  className={`px-3 py-1 rounded-full font-medium text-sm ${getEstadoColor(venta.estado)}`}
-                >
-                  {venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1)}
-                </span>
+          {ventas.map((venta) => {
+            const montoNeto = venta.montoFinal;
+            return (
+              <div
+                key={venta.id}
+                className="flex flex-col md:flex-row md:items-center md:justify-between bg-white rounded-lg shadow-sm p-4 border border-gray-200"
+              >
+                <div className="flex flex-col space-y-1 md:flex-row md:space-y-0 md:space-x-6 md:items-center flex-1">
+                  <span className="font-semibold text-gray-800">ID: {venta.id}</span>
+                  <span className="text-gray-600">Cliente: {venta.clienteId || '—'}</span>
+                  <span className="text-gray-600">Fecha: {new Date(venta.fecha).toLocaleDateString()}</span>
+                  <span className="text-gray-600">
+                    Total: ${montoNeto.toFixed(2)}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full font-medium text-sm ${getEstadoColor(venta.estado)}`}
+                  >
+                    {venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1)}
+                  </span>
+                </div>
+                <div className="mt-3 md:mt-0 flex space-x-3">
+                  {venta.estado.toLowerCase() !== 'anulada' && isAdmin && (
+                    <button
+                      onClick={() => handleAnularVenta(venta.id)}
+                      className="px-4 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+                      title="Anular venta"
+                    >
+                      Anular
+                    </button>
+                  )}
+                  {venta.estado.toLowerCase() === 'anulada' && (
+                    <button
+                      disabled
+                      className="px-4 py-1 rounded-md bg-blue-400 text-white cursor-not-allowed"
+                      title="Venta anulada"
+                    >
+                      Anulada
+                    </button>
+                  )}
+                  {isAdmin && (
+                    <button
+                      className="px-4 py-1 rounded-md bg-yellow-500 text-white cursor-not-allowed opacity-50"
+                      title="Editar venta (deshabilitado)"
+                      disabled
+                    >
+                      Editar
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="mt-3 md:mt-0 flex space-x-3">
-                {venta.estado.toLowerCase() !== 'anulada' && isAdmin && (
-                  <button
-                    onClick={() => handleAnularVenta(venta.id)} // Aquí no hay error porque venta.id es number
-                    className="px-4 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 transition"
-                    title="Anular venta"
-                  >
-                    Anular
-                  </button>
-                )}
-                {venta.estado.toLowerCase() === 'anulada' && (
-                  <button
-                    disabled
-                    className="px-4 py-1 rounded-md bg-blue-400 text-white cursor-not-allowed"
-                    title="Venta anulada"
-                  >
-                    Anulada
-                  </button>
-                )}
-                {isAdmin && (
-                  <button
-                    // Botón editar deshabilitado sin funcionalidad
-                    className="px-4 py-1 rounded-md bg-yellow-500 text-white cursor-not-allowed opacity-50"
-                    title="Editar venta (deshabilitado)"
-                    disabled
-                  >
-                    Editar
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

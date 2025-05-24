@@ -4,19 +4,21 @@ import ProductoForm from '../components/ProductoForm';
 import { Producto, getProductos } from '../services/productoService';
 import { getProveedores, getCategorias } from '../services/productoService';
 import { useAuth } from '../context/AuthContext';
+import { useCarrito } from '../context/CarritoContext'; // ✅ Importamos el hook
 import { Plus, RefreshCw, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Productos = () => {
   const { user } = useAuth();
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const { carrito, agregarProducto } = useCarrito(); // ✅ Usamos contexto del carrito
+
+  const [productos, setProductos] = useState<(Producto & { imagenUrl?: string })[]>([]);
   const [proveedores, setProveedores] = useState<{ id: number; nombre: string }[]>([]);
   const [categorias, setCategorias] = useState<{ id: number; nombre: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [currentProducto, setCurrentProducto] = useState<Producto | null>(null);
-  const [carrito, setCarrito] = useState<Producto[]>([]);  // Estado carrito
   const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
@@ -32,7 +34,12 @@ const Productos = () => {
         getProveedores(),
         getCategorias()
       ]);
-      setProductos(productosData);
+      // Mapeo para agregar imagenUrl a cada producto
+      const productosConImagen = productosData.map((p) => ({
+        ...p,
+        imagenUrl: `/images/productos/${p.id}.jpg`, // Aquí asumimos la ruta de la imagen
+      }));
+      setProductos(productosConImagen);
       setProveedores(proveedoresData);
       setCategorias(categoriasData);
     } catch (err) {
@@ -48,7 +55,11 @@ const Productos = () => {
       setIsLoading(true);
       setError(null);
       const data = await getProductos();
-      setProductos(data);
+      const productosConImagen = data.map((p) => ({
+        ...p,
+        imagenUrl: `/images/productos/${p.id}.jpg`,
+      }));
+      setProductos(productosConImagen);
     } catch (err) {
       setError('Error al cargar los productos');
       console.error(err);
@@ -84,16 +95,11 @@ const Productos = () => {
     fetchProductos();
   };
 
-  // --- NUEVO: Función para agregar producto al carrito ---
-  const agregarAlCarrito = (producto: Producto) => {
-    setCarrito((prev) => [...prev, producto]);
-  };
-
   return (
     <div>
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
         <h1 className="text-2xl font-bold">Catálogo de Productos</h1>
-        
+
         <div className="flex items-center gap-6 mt-4 md:mt-0">
           {/* Mostrar carrito con cantidad */}
           <Link to="/carrito" className="relative inline-flex items-center gap-2 rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600">
@@ -134,7 +140,7 @@ const Productos = () => {
           isAdmin={isAdmin}
           onEdit={handleEdit}
           onDeleted={handleProductoDeleted}
-          agregarAlCarrito={agregarAlCarrito} // Pasamos la función al componente tabla
+          agregarAlCarrito={agregarProducto} // ✅ Usamos función del contexto
         />
       )}
 

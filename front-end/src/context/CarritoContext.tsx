@@ -7,11 +7,14 @@ interface ItemCarrito {
 }
 
 interface CarritoContextType {
-  carrito: ItemCarrito[];
+  carrito: ReadonlyArray<ItemCarrito>;
   agregarProducto: (producto: Producto) => void;
   quitarProducto: (id: number) => void;
-  disminuirCantidad: (id: number) => void; // Nueva función para disminuir cantidad
+  disminuirCantidad: (id: number) => void;
   limpiarCarrito: () => void;
+  aplicarCodigoDescuento: (codigo: string) => boolean;
+  obtenerTotal: () => number;
+  obtenerTotalConDescuento: () => number;
 }
 
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
@@ -22,15 +25,26 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
   const agregarProducto = (producto: Producto) => {
     setCarrito((prev) => {
       const existe = prev.find((item) => item.producto.id === producto.id);
+
       if (existe) {
-        // Aquí podrías agregar validación contra stock disponible si querés
-        return prev.map((item) =>
-          item.producto.id === producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
+        if (existe.cantidad < producto.stock) {
+          return prev.map((item) =>
+            item.producto.id === producto.id
+              ? { ...item, cantidad: item.cantidad + 1 }
+              : item
+          );
+        } else {
+          console.warn(`Stock insuficiente para el producto "${producto.nombre}".`);
+          return prev;
+        }
       }
-      return [...prev, { producto, cantidad: 1 }];
+
+      if (producto.stock > 0) {
+        return [...prev, { producto, cantidad: 1 }];
+      } else {
+        console.warn(`No se puede agregar "${producto.nombre}" porque no hay stock.`);
+        return prev;
+      }
     });
   };
 
@@ -42,7 +56,7 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
             ? { ...item, cantidad: item.cantidad - 1 }
             : item
         )
-        .filter((item) => item.cantidad > 0) // Remueve items con cantidad 0
+        .filter((item) => item.cantidad > 0)
     );
   };
 
@@ -50,11 +64,31 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
     setCarrito((prev) => prev.filter((item) => item.producto.id !== id));
   };
 
-  const limpiarCarrito = () => setCarrito([]);
+  const limpiarCarrito = () => {
+    setCarrito([]);
+  };
+
+  // 🔁 Código de descuento deshabilitado
+  const aplicarCodigoDescuento = () => false;
+
+  // 🔁 Total sin descuento
+  const obtenerTotal = () =>
+    carrito.reduce((total, item) => total + item.producto.precioActual * item.cantidad, 0);
+
+  const obtenerTotalConDescuento = () => obtenerTotal(); // sin descuento
 
   return (
     <CarritoContext.Provider
-      value={{ carrito, agregarProducto, quitarProducto, disminuirCantidad, limpiarCarrito }}
+      value={{
+        carrito,
+        agregarProducto,
+        quitarProducto,
+        disminuirCantidad,
+        limpiarCarrito,
+        aplicarCodigoDescuento,
+        obtenerTotal,
+        obtenerTotalConDescuento,
+      }}
     >
       {children}
     </CarritoContext.Provider>
@@ -63,6 +97,8 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
 
 export const useCarrito = (): CarritoContextType => {
   const context = useContext(CarritoContext);
-  if (!context) throw new Error('useCarrito debe usarse dentro de un CarritoProvider');
+  if (!context) {
+    throw new Error('useCarrito debe usarse dentro de un CarritoProvider');
+  }
   return context;
 };
