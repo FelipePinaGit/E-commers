@@ -1,11 +1,18 @@
 🛒E-COMMERS
 👥 Listado de Integrantes
+
    🧑‍💻 Piña Felipe
+   
       🛠️ Back-End:
+      
          🔧 Desarrollo de estructura de microservicios
+         
          🔗 Conexión entre ventas-service y catalogo-service
+         
       💻 Front-End:
+      
          👁️‍🗨️ Visualización de ventas registradas
+         
          🛒 Integración del carrito de compras
 
    🎨 Marcelo Comisso
