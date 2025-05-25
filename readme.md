@@ -16,16 +16,19 @@
          🛒 Integración del carrito de compras
 
    🎨 Marcelo Comisso
+   
       💻 Front-End:
          🧱 Desarrollo de la estructura y la interfaz del front
          🔌 Conexión del front con el back
 
    🧑‍🔧 Humberto Perez
+   
       🛠️ Back-End:
          📥 Lógica de endpoints: GET (Ver) y POST (Agregar)
          ⚙️ Implementación en cada microservicio
 
    🧑‍🔧 Lautaro Petitfour
+   
       🛠️ Back-End:
          ✏️ Lógica de endpoints: PUT (Editar), DELETE (Eliminar) y PATCH (Anular)
          ⚙️ Implementación en cada microservicio
